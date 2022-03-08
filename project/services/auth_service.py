@@ -3,7 +3,7 @@ import calendar
 import jwt
 from flask import current_app
 
-from project.exceptions import ItemNotFound
+from project.exceptions import ItemNotFound, PasswordError
 from project.services.user_service import UserService
 from project.tools.hash_tools import compare_password
 
@@ -38,11 +38,11 @@ class AuthService:
         user = self.user_service.get_by_email(email)
 
         if user is None:
-            raise Exception()
+            raise ItemNotFound
 
         if not is_refresh:
             if not compare_password(user.password, password):
-                raise Exception()
+                raise PasswordError
 
         data = {
             'email': user.email,
@@ -69,7 +69,8 @@ class AuthService:
 
     def approve_refresh_token(self, refresh_token: str):
         """
-        Метод генерирует запрос на формирование пары access
+        Метод генерирует запрос на формирование пары access и refresh токенов
+
         :param refresh_token: refresh токен, который будет использоваться для генерации новых токенов
         :return: Exception или словарь, состоящий из access и refresh токенов
         """

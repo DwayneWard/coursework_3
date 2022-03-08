@@ -19,8 +19,7 @@ def auth_required(func):
             jwt.decode(token, current_app.config["JWT_SECRET"],
                        algorithms=[current_app.config["JWT_ALGORITHM"]])
         except Exception as e:  # Надо переписать на что-то другое
-            print('JWT Decode Exception', e)
-            abort(401, '')
+            abort(401, 'JWT Decode Exception')
         return func(*args, **kwargs)
 
     return wrapper

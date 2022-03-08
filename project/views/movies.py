@@ -48,7 +48,6 @@ class MovieView(Resource):
     Class-Based View для отображения конкретного фильма из БД.
     Реализовано:
     - отображение данных о конкретном фильме GET-запросом на /movies/id;
-    -
     """
 
     @movies_ns.response(200, 'OK')

@@ -3,8 +3,6 @@ from flask_restx import abort, Namespace, Resource
 
 from project.exceptions import ItemNotFound
 from project.implemented import genre_service
-from project.services.genres_service import GenreService
-from project.setup_db import db
 
 genres_ns = Namespace("genres")
 

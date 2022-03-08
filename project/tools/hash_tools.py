@@ -23,6 +23,7 @@ def compare_password(password_hash, other_password: str) -> bool:
             current_app.config["PWD_HASH_ITERATIONS"],
         ))
 
+
 def make_user_password_hash(password: str):
     """
     Метод производит генерацию хеша из передаваемого пароля. Кодируется методом SHA256,

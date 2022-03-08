@@ -13,7 +13,7 @@ class DirectorsView(Resource):
     Class-Based View для отображения режиссеров из БД.
     Реализовано:
     - отображение всех режиссеров GET-запросом на /directors.
-     - отображение режиссеров постранично;
+    - отображение режиссеров постранично;
     (GET-запросом на /directors с использованием квери-параметра page);
     """
 
@@ -56,7 +56,3 @@ class DirectorView(Resource):
             return director_service.get_one(did)
         except ItemNotFound:
             abort(404, "Director not found")
-
-
-
-

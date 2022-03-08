@@ -11,11 +11,14 @@ auth_ns = Namespace('auth')
 class AuthsRegisterView(Resource):
     """
     Класс CBV для представления /auth/register.
-    POST-метод: производит генерацию access и refresh tokens на основе запроса пользователя.
     """
 
     @auth_ns.response(201, "User created")
+    @auth_ns.response(400, "User already registered")
     def post(self):
+        """
+        Метод производит запись данных о пользователе в базу данных. Пароь записывается в виде хеша.
+        """
         req_json = request.json
         try:
             auth_service.register_new_user(req_json)
@@ -27,9 +30,16 @@ class AuthsRegisterView(Resource):
 
 @auth_ns.route('/login/')
 class AuthLoginView(Resource):
+    """
+    CBV для представления /auth/login
+    """
+
     @auth_ns.response(201, 'Tokens created')
     @auth_ns.response(401, "No data")
     def post(self):
+        """
+        Метод реализует генерацию пары access и refresh токенов для дальнейшей авторизации пользователя
+        """
         req_json = request.json
         email = req_json.get('email')
         password = req_json.get('password')
@@ -41,7 +51,14 @@ class AuthLoginView(Resource):
 
         return tokens, 201
 
+    @auth_ns.response(201, 'OK')
+    @auth_ns.response(401, 'No refresh token data')
+    @auth_ns.response(404, 'User not found')
     def put(self):
+        """
+        Метод реализует выдачу новой пары access и refresh токенов на основании имеющегося
+        у пользователя refresh токена
+        """
         req_json = request.json
         refresh_token = req_json.get("refresh_token")
 

@@ -13,14 +13,15 @@ users_ns = Namespace('user')
 @users_ns.route('/')
 class UserView(Resource):
     """
-    Class-Based View для отображения конкретного пользователя из БД.
+    Class-Based View для отображения профиля авторизованного пользователя.
     """
 
     @auth_required
     @users_ns.response(200, "OK")
     def get(self):
         """
-        Метод реализует отправку GET-запроса на /users/id.
+        Метод производит получение данных о профиле авторизованного пользователя. В выдаче отсутсвует хэш-пароль,
+        хранящийся в базе данных. Реализуется путем отправки GET-запроса на /user
 
         :return: Сериализованные данные в формате JSON и HTTP-код 200.
         """
@@ -30,25 +31,30 @@ class UserView(Resource):
 
     @auth_required
     @users_ns.response(204, "OK")
-    @users_ns.response(404, "Something went wrong")
     def patch(self):
+        """
+        Метод производит частичное обновление данных в профиле авторизованного пользователя (имя, фамилия, любимый жанр)
+        путем отправления PATCH-запроса на /user
+        """
         email = get_email_from_token()
         data = request.json
-        try:
-            user_service.partial_update(email, data) # Не обновляется favorite_genre
-        except Exception:
-            abort(404, "Something went wrong")
+
+        user_service.partial_update(email, data)
         return "Update success", 204
 
 
 @users_ns.route("/password")
 class PasswordUpdateView(Resource):
     """
-    Class-Based View для обновления конкретным пользователем пароля.
+    Class-Based View для обновления авторизованным пользователем пароля.
     """
 
     @auth_required
     def put(self):
+        """
+        Метод реализует изменение пароля авторизованного пользователя. Для обновления необходимо отправить
+        новый пароль и старый пароль путем отправления PUT-запроса на /user/password
+        """
         # password_1 - старый пароль
         # password_2 - новый пароль
         email = get_email_from_token()
