@@ -1,12 +1,11 @@
 import datetime
 import calendar
-# from constants import JWT_SECRET, JWT_ALGORITHM
-# from service.user import UserService
 import jwt
 from flask import current_app
 
 from project.exceptions import ItemNotFound
 from project.services.user_service import UserService
+from project.tools.hash_tools import compare_password
 
 
 class AuthService:
@@ -19,6 +18,12 @@ class AuthService:
         self.user_service = user_service
 
     def register_new_user(self, data: dict):
+        """
+        Метод производит регистрацию нового пользователя
+
+        :param data:
+        :return: Пользователя в базе данных
+        """
         return self.user_service.create(data)
 
     def generate_token(self, email: str, password: str, is_refresh=False):
@@ -36,7 +41,7 @@ class AuthService:
             raise Exception()
 
         if not is_refresh:
-            if not self.user_service.compare_password(user.password, password):
+            if not compare_password(user.password, password):
                 raise Exception()
 
         data = {
@@ -68,7 +73,8 @@ class AuthService:
         :param refresh_token: refresh токен, который будет использоваться для генерации новых токенов
         :return: Exception или словарь, состоящий из access и refresh токенов
         """
-        data = jwt.decode(refresh_token, current_app.config["JWT_SECRET"], algorithms=[current_app.config["JWT_ALGORITHM"]])
+        data = jwt.decode(refresh_token, current_app.config["JWT_SECRET"],
+                          algorithms=[current_app.config["JWT_ALGORITHM"]])
         email = data.get('email')
 
         user = self.user_service.get_by_email(email)

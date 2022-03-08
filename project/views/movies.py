@@ -19,7 +19,6 @@ class MoviesView(Resource):
     (GET-запросом на /movies с использованием квери-параметра page и status);
     """
 
-    # @auth_required
     @movies_ns.response(200, "OK")
     def get(self) -> tuple:
         """
@@ -52,7 +51,6 @@ class MovieView(Resource):
     -
     """
 
-    # @auth_required
     @movies_ns.response(200, 'OK')
     @movies_ns.response(404, "Movie not found")
     def get(self, mid: int) -> tuple:

@@ -1,79 +1,64 @@
-# from flask import request
-# from flask_restx import Namespace, Resource
-#
-# from project.implemented import user_service
-#
-#
-# users_ns = Namespace('users')
-#
-#
-# @users_ns.route('/')
-# class UsersView(Resource):
-#     """
-#     Class-Based View для отображения режиссеров из БД.
-#     Реализовано:
-#     - отображение всех пользователей GET-запросом на /users.
-#     """
-#
-#     def get(self):
-#         """
-#         Метод реализует отправку GET-запроса на /users.
-#         :return: Сериализованные данные в формате JSON и HTTP-код 200.
-#         """
-#         all_users = user_service.get_all()
-#         return users_schema.dump(all_users), 200
-#
-#     def post(self) -> tuple:
-#         """
-#         Метод реализует отправку POST-запроса на /users.
-#         Записывает данные о новом пользователе с использованием переданных в формате JSON в теле POST-запроса.
-#         :return: Возвращает пустую строку и HTTP-код 201
-#         """
-#         json_data = request.json
-#         user_service.create(json_data)
-#
-#         return '', 201
-#
-#
-# @users_ns.route('/<uid>')
-# class UserView(Resource):
-#     """
-#     Class-Based View для отображения конкретного пользователя из БД.
-#     Реализовано:
-#     - отображение данных о конкретном пользователе GET-запросом на /users/id;
-#     """
-#     def get(self, uid):
-#         """
-#         Метод реализует отправку GET-запроса на /users/id.
-#         :param uid: id пользователя, информацию о котором нужно вытащить из БД.
-#         :return: Сериализованные данные в формате JSON и HTTP-код 200.
-#         В случае, если id нет в базе данных - пустая строка и HTTP-код 404.
-#         """
-#         user_by_id = user_service.get_one(uid)
-#         if user_by_id is None:
-#             return '', 404
-#         return user_schema.dump(user_by_id), 200
-#
-#     def put(self, uid: int) -> tuple:
-#         """
-#         Метод реализует PUT-запрос на /users/id.
-#         В теле запроса необходимо передать данные со всеми полями таблицы users, для обновления данных.
-#         :param uid: id пользователя, информацию о котором нужно заменить из БД.
-#         :return: Записывает в БД обновленные данные о конкретном пользователе.
-#         Возвращает пустую строку и HTTP-код 204.
-#         В случае, если id нет в базе данных - пустая строка и HTTP-код 404.
-#         """
-#         json_data = request.json
-#         user_service.update(uid, json_data)
-#
-#         return '', 204
-#
-#     def delete(self, uid: int) -> tuple:
-#         """
-#         Метод реализует отправку DELETE-запроса на /users/id.
-#         :param uid: id пользователя, информацию о котором нужно удалить из БД.
-#         :return: Возвращает пустую строку и HTTP-код 204.
-#         В случае, если id нет в базе данных - пустая строка и HTTP-код 404.
-#         """
-#         user_service.delete(uid)
-#         return '', 204
+from flask import request, abort
+from flask_restx import Namespace, Resource
+
+from project.exceptions import PasswordError
+from project.implemented import user_service
+from project.schemas.user import UserSchema
+from project.tools.decode_token import get_email_from_token
+from project.tools.decorators import auth_required
+
+users_ns = Namespace('user')
+
+
+@users_ns.route('/')
+class UserView(Resource):
+    """
+    Class-Based View для отображения конкретного пользователя из БД.
+    """
+
+    @auth_required
+    @users_ns.response(200, "OK")
+    def get(self):
+        """
+        Метод реализует отправку GET-запроса на /users/id.
+
+        :return: Сериализованные данные в формате JSON и HTTP-код 200.
+        """
+        email = get_email_from_token()
+        user = user_service.get_by_email(email)
+        return UserSchema().dump(user), 200
+
+    @auth_required
+    @users_ns.response(204, "OK")
+    @users_ns.response(404, "Something went wrong")
+    def patch(self):
+        email = get_email_from_token()
+        data = request.json
+        try:
+            user_service.partial_update(email, data) # Не обновляется favorite_genre
+        except Exception:
+            abort(404, "Something went wrong")
+        return "Update success", 204
+
+
+@users_ns.route("/password")
+class PasswordUpdateView(Resource):
+    """
+    Class-Based View для обновления конкретным пользователем пароля.
+    """
+
+    @auth_required
+    def put(self):
+        # password_1 - старый пароль
+        # password_2 - новый пароль
+        email = get_email_from_token()
+        req_json = request.json
+
+        old_password = req_json.get('password_1')
+        new_password = req_json.get('password_2')
+
+        try:
+            user_service.update_password(email, old_password, new_password)
+            return "OK", 200
+        except PasswordError:
+            abort(401, "Password is incorrect")

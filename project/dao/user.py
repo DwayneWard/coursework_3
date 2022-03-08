@@ -9,6 +9,7 @@ class UserDAO:
     def __init__(self, session):
         """
         Метод инициализирует поле класса session, как сессию работы с базой данных.
+
         :param session: Сессия базы данных
         """
         self.session = session
@@ -16,6 +17,7 @@ class UserDAO:
     def get_all(self) -> list[User]:
         """
         Метод реализует получение записей о всех пользователях из базы данных.
+
         :return: Ответ базы данных на запрос получения данных о всех пользователях.
         """
         return self.session.query(User).all()
@@ -23,6 +25,7 @@ class UserDAO:
     def get_one(self, uid: int) -> list[User]:
         """
         Метод реализует получение записи об одном пользователе из базы данных по id.
+
         :param uid: id фильма в базе данных.
         :return: Ответ базы данных на запрос о получении записи о пользователе по id.
         """
@@ -31,6 +34,7 @@ class UserDAO:
     def get_by_email(self, email: str):
         """
         Метод реализует получение записи об одном пользователе из базы данных по email.
+
         :param email: Имя пользователя.
         :return: Ответ базы данных на запрос о получении записи о пользователе по email
         """
@@ -39,6 +43,7 @@ class UserDAO:
     def create(self, data: dict) -> list[User]:
         """
         Метод реализует запись новых данных в базу данных.
+
         :param data: Данные, которые необходимо записать в базу данных.
         """
         new_user = User(**data)
@@ -49,6 +54,7 @@ class UserDAO:
     def delete(self, user: list[User]) -> None:
         """
         Метод реализует обновление записи о пользователе в базе данных.
+
         :param user: Данные о пользователе, которые нужно записать в базу данных.
         """
         self.session.delete(user)
@@ -57,6 +63,7 @@ class UserDAO:
     def update(self, user: list[User]) -> None:
         """
         Метод реализует обновление записи о пользователе в базах данных.
+
         :param user: Данные о пользователе, которые нужно записать в базу данных.
         :return: None
         """

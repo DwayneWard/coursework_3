@@ -3,7 +3,6 @@ from flask_restx import Namespace, Resource
 
 from project.exceptions import ItemNotFound
 from project.implemented import auth_service
-from project.schemas.user import UserSchema
 
 auth_ns = Namespace('auth')
 
