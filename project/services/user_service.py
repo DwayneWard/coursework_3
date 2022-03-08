@@ -3,6 +3,8 @@ import hashlib
 import hmac
 
 # from constants import PWD_HASH_SALT, PWD_HASH_ITERATIONS
+from flask import current_app
+
 from project.dao.user import UserDAO
 
 
@@ -55,6 +57,10 @@ class UserService:
 
         :param data: Данные, которые необходимо записать в базу данных.
         """
+        password = data['password']
+        hash_password = self.make_user_password_hash(password)
+        data['password'] = hash_password
+
         return self.dao.create(data)
 
     def delete(self, uid: int) -> None:
@@ -83,7 +89,7 @@ class UserService:
     def make_user_password_hash(self, password: str):
         """
         Метод производит генерацию хеша из передаваемого пароля. Кодируется методом SHA256,
-        с использованием SALT и количеством иттераций 100000.
+        с использованием SALT и количеством иттераций.
 
         :param password: Пароль в виде строки.
         :return: Сгенерированный хэш-пароль
@@ -91,8 +97,8 @@ class UserService:
         return base64.b64encode(hashlib.pbkdf2_hmac(
             'sha256',
             password.encode('utf-8'),
-            PWD_HASH_SALT,
-            PWD_HASH_ITERATIONS
+            current_app.config['PWD_HASH_SALT'],
+            current_app.config["PWD_HASH_ITERATIONS"],
         ))
 
     def compare_password(self, password_hash, other_password: str) -> bool:
@@ -109,6 +115,6 @@ class UserService:
             hashlib.pbkdf2_hmac(
                 'sha256',
                 other_password.encode('utf-8'),
-                PWD_HASH_SALT,
-                PWD_HASH_ITERATIONS
+                current_app.config['PWD_HASH_SALT'],
+                current_app.config["PWD_HASH_ITERATIONS"],
             ))
