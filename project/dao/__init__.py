@@ -1,5 +1,5 @@
-from .genre import GenreDAO
-
-__all__ = [
-    "GenreDAO",
-]
+# from .genre import GenreDAO
+#
+# __all__ = [
+#     "GenreDAO",
+# ]

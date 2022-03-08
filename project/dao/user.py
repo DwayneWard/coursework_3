@@ -1,4 +1,4 @@
-from dao.model.user import User
+from project.dao.models.user import User
 
 
 class UserDAO:
@@ -28,13 +28,13 @@ class UserDAO:
         """
         return self.session.query(User).filter(User.id == uid).one_or_none()
 
-    def get_by_username(self, username: str):
+    def get_by_email(self, email: str):
         """
-        Метод реализует получение записи об одном пользователе из базы данных по username.
-        :param username: Имя пользователя.
-        :return: Ответ базы данных на запрос о получении записи о пользователе по username
+        Метод реализует получение записи об одном пользователе из базы данных по email.
+        :param email: Имя пользователя.
+        :return: Ответ базы данных на запрос о получении записи о пользователе по email
         """
-        return self.session.query(User).filter(User.username == username).first()
+        return self.session.query(User).filter(User.email == email).first()
 
     def create(self, data: dict) -> list[User]:
         """

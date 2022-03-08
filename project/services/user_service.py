@@ -3,7 +3,7 @@ import hashlib
 import hmac
 
 # from constants import PWD_HASH_SALT, PWD_HASH_ITERATIONS
-from dao.user import UserDAO
+from project.dao.user import UserDAO
 
 
 class UserService:
@@ -40,14 +40,14 @@ class UserService:
             return None
         return user
 
-    def get_by_username(self, username: str):
+    def get_by_email(self, email: str):
         """
-        Метод реализует получение записи об одном пользователе из базы данных по username.
+        Метод реализует получение записи об одном пользователе из базы данных по email.
 
-        :param username: Имя пользователя.
-        :return: Ответ базы данных на запрос о получении записи о пользователе по username
+        :param email: Имя пользователя.
+        :return: Ответ базы данных на запрос о получении записи о пользователе по email
         """
-        return self.dao.get_by_username(username)
+        return self.dao.get_by_email(email)
 
     def create(self, data: dict) -> list:
         """

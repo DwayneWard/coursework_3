@@ -1,4 +1,6 @@
-from dao.director import DirectorDAO
+from project.dao.director import DirectorDAO
+from project.exceptions import ItemNotFound
+from project.schemas.director import DirectorSchema
 
 
 class DirectorService:
@@ -12,54 +14,35 @@ class DirectorService:
         """
         self.dao = dao
 
-    def get_one(self, did: int) -> None or list:
+    def get_one(self, did: int) -> ItemNotFound or list:
         """
-        Метод реализует получение записи об одном фильме из базы данных по id.
-        :param did: id фильма в базе данных.
-        :return: Ответ базы данных на запрос о получении записи о фильме по id.
-        При отсутствии id в базе данных возвращает None.
+        Метод реализует получение записи об одном режиссере из базы данных по id.
+
+        :param did: id режиссера в базе данных.
+        :return: Сериализованные данные о режиссере по id.
+        При отсутствии id в базе данных возвращает exception.
         """
         director = self.dao.get_one(did)
         if not director:
-            return None
-        return director
+            raise ItemNotFound
+        return DirectorSchema().dump(director)
 
     def get_all(self) -> list:
         """
-        Метод реализует получение записей о всех фильмах из базы данных.
-        :return: Ответ базы данных на запрос получения данных о всех фильмах.
-        """
-        return self.dao.get_all()
+        Метод реализует получение записей о всех режиссерах из базы данных.
 
-    def create(self, data: dict) -> None:
+        :return: Сериализованные данные о всех режиссерах.
         """
-        Метод реализует запись новых данных в базу данных.
-        :param data: Данные, которые необходимо записать в базу данных.
-        :return: None
+        directors = self.dao.get_all()
+        return DirectorSchema(many=True).dump(directors)
+
+    def get_by_page(self, page: int) -> list:
         """
-        return self.dao.create(data)
+        Метод реализует получение записей из базы данных постранично.
+        Ограничение на количество записей устанавливается в конфигурации приложения.
 
-    def update(self, did: int, data: dict) -> None:
+        :param page: Номер страницы.
+        :return: Cериализованные данные о всех фильмах постранично.
         """
-        Метод реализует обновление записи о фильме в базах данных.
-        :param did: id фильма в базе данных.
-        :param data: Данные о фильме, которые нужно записать в базу данных.
-        :return:
-        """
-        director = self.get_one(did)
-
-        director.id = data.get('id')
-        director.name = data.get('name')
-
-        self.dao.update(director)
-
-    def delete(self, did: int) -> None:
-        """
-        Метод реализует удаление записи о фильме в базе данных по id.
-        :param did: id фильма в базе данных.
-        :return: None
-        """
-        director = self.get_one(did)
-
-        self.dao.delete(director)
-
+        directors_by_page = self.dao.get_by_page(page)
+        return DirectorSchema(many=True).dump(directors_by_page)
