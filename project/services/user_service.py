@@ -1,5 +1,5 @@
 from project.dao.user import UserDAO
-from project.exceptions import PasswordError
+from project.exceptions import PasswordError, UserAlreadyHave
 from project.tools.hash_tools import make_user_password_hash, compare_password
 
 
@@ -55,6 +55,11 @@ class UserService:
         password = data['password']
         hash_password = make_user_password_hash(password)
         data['password'] = hash_password
+
+        user = self.get_by_email(data['email'])
+
+        if user:
+            raise UserAlreadyHave
 
         return self.dao.create(data)
 

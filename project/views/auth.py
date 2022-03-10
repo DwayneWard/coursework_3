@@ -1,7 +1,7 @@
 from flask import request, abort
 from flask_restx import Namespace, Resource
 
-from project.exceptions import ItemNotFound
+from project.exceptions import ItemNotFound, UserAlreadyHave
 from project.implemented import auth_service
 
 auth_ns = Namespace('auth')
@@ -14,17 +14,16 @@ class AuthsRegisterView(Resource):
     """
 
     @auth_ns.response(201, "User created")
-    @auth_ns.response(400, "User already registered")
+    @auth_ns.response(409, "User already registered")
     def post(self):
         """
-        Метод производит запись данных о пользователе в базу данных. Пароь записывается в виде хеша.
+        Метод производит запись данных о пользователе в базу данных. Пароль записывается в виде хеша.
         """
         req_json = request.json
         try:
             auth_service.register_new_user(req_json)
-        except Exception:  # Переписать на нормальную ошибку!
-            abort(400, "User already registered")
-
+        except UserAlreadyHave:
+            abort(409, "User already registered")
         return "User created", 201
 
 

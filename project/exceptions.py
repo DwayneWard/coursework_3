@@ -4,3 +4,7 @@ class ItemNotFound(Exception):
 
 class PasswordError(Exception):
     pass
+
+
+class UserAlreadyHave(Exception):
+    pass

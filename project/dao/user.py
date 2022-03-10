@@ -38,7 +38,7 @@ class UserDAO:
         :param email: Имя пользователя.
         :return: Ответ базы данных на запрос о получении записи о пользователе по email
         """
-        return self.session.query(User).filter(User.email == email).first()
+        return self.session.query(User).filter(User.email == email).one_or_none()
 
     def create(self, data: dict) -> list[User]:
         """
