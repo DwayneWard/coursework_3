@@ -1,6 +1,6 @@
 from flask import current_app
 
-from project.dao.models import Genre
+from project.dao.models.genre import Genre
 
 
 class GenreDAO:

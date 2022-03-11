@@ -21,9 +21,7 @@ class MovieDAO:
         :param mid: id фильма в базе данных.
         :return: Ответ базы данных на запрос о получении записи о фильме по id.
         """
-        return self.session.query(Movie).get(mid)
-
-        # return self.session.query(Movie).filter(Movie.id == mid).one_or_none()
+        return self.session.query(Movie).filter(Movie.id == mid).one_or_none()
 
     def get_all(self) -> list[Movie]:
         """
