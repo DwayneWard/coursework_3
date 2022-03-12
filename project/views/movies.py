@@ -37,12 +37,14 @@ class MoviesView(Resource):
 
         if status == 'new' and page:
             return movie_service.get_newest(page), 200
+        elif status == 'new':
+            return movie_service.get_newest()
         elif page:
             return movie_service.get_by_page(page), 200
         return movie_service.get_all(), 200
 
 
-@movies_ns.route('/<int:mid>')
+@movies_ns.route('/<int:mid>/')
 class MovieView(Resource):
     """
     Class-Based View для отображения конкретного фильма из БД.

@@ -37,9 +37,21 @@ class TestUserDAO:
     def test_get_user_by_id_not_found(self):
         assert self.dao.get_one(1) is None
 
-    # def test_get_all_users(self, user_1, user_2):
-    #     assert self.dao.get_all() == [user_1, user_2]
-    #
-    # def test_get_by_page(self):
-    #     page = 2
-    #     assert len(self.dao.get_by_page(page)) == 0
+    def test_get_all_users(self, user_1, user_2):
+        assert self.dao.get_all() == [user_1, user_2]
+
+    def test_get_by_email(self, user_2):
+        email = "test2"
+        assert self.dao.get_by_email(email) == user_2
+
+    def test_user_create(self):  # TODO Что писать?? Не понимаю
+        pass
+
+    def test_user_delete(self, user_1):
+        self.dao.delete(user_1)
+        assert self.dao.get_one(1) is None
+
+    def test_user_update(self, user_1):
+        user_1.email = 'updated'
+        self.dao.update(user_1)
+        assert self.dao.get_one(1) == user_1

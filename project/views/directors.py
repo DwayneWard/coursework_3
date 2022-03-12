@@ -33,7 +33,7 @@ class DirectorsView(Resource):
         return director_service.get_all(), 200
 
 
-@directors_ns.route('/<int:did>')
+@directors_ns.route('/<int:did>/')
 class DirectorView(Resource):
     """
     Class-Based View для отображения конкретного режиссера из БД.

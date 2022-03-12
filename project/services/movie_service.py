@@ -48,7 +48,7 @@ class MovieService:
         movies_by_page = self.dao.get_by_page(page)
         return MovieSchema(many=True).dump(movies_by_page)
 
-    def get_newest(self, page: int) -> list:
+    def get_newest_by_page(self, page: int) -> list:
         """
         Метод реализует получение записей из базы данных постранично, отсортированным по году выпуска.
         Ограничение на количество записей устанавливается в конфигурации приложения.
@@ -57,5 +57,9 @@ class MovieService:
         :return: Cериализованные данные о всех фильмах постранично, в отсортированном по году выпуска виде.
         """
 
-        newest_movie_by_page = self.dao.get_newest(page)
-        return MovieSchema(many=True).dump(newest_movie_by_page)
+        newest_movies_by_page = self.dao.get_newest_by_page(page)
+        return MovieSchema(many=True).dump(newest_movies_by_page)
+
+    def get_newest(self) -> list:
+        newest_movies = self.dao.get_newest()
+        return MovieSchema(many=True).dump(newest_movies)

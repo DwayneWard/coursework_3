@@ -44,7 +44,7 @@ class MovieDAO:
 
         return self.session.query(Movie).limit(page_limit).offset(current_page).all()
 
-    def get_newest(self, page: int) -> list[Movie]:
+    def get_newest_by_page(self, page: int) -> list[Movie]:
         """
         Метод реализует получение записи о всех фильмах из базы данных в количестве, заданном огранчением на выдачу
         страниц и отсортированном по году выпуска
@@ -56,3 +56,6 @@ class MovieDAO:
         current_page = page_limit * (int(page) - 1)
 
         return self.session.query(Movie).order_by(Movie.year.desc()).limit(page_limit).offset(current_page).all()
+
+    def get_newest(self) -> list[Movie]:
+        return self.session.query(Movie).order_by(Movie.year.desc()).all()

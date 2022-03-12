@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restx import abort, Namespace, Resource
 
 from project.exceptions import ItemNotFound
@@ -34,7 +34,7 @@ class GenresView(Resource):
         return genre_service.get_all(), 200
 
 
-@genres_ns.route("/<int:gid>")
+@genres_ns.route("/<int:gid>/")
 class GenreView(Resource):
     """
         Class-Based View для отображения конкретного жанра из БД.
@@ -53,6 +53,6 @@ class GenreView(Resource):
         В случае, если id нет в базе данных - exception и HTTP-код 404.
         """
         try:
-            return genre_service.get_one(gid)
+            return jsonify(genre_service.get_one(gid))
         except ItemNotFound:
             abort(404, "Genre not found")
