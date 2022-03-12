@@ -1,47 +1,17 @@
-# Исходный код для курсовой работы №3
+## Привет!
 
-## Описание проекта
-- Установка зависимостей
-```shell
-pip install -r requirements.txt
-```
+### Это проект курсового проекта №3 SkyPro. Сложная версия (MVC архитектура)
 
-- Создание моделей (очистит БД и создаст все модели, указанные в импорте)
-```shell
-python create_tables
-```
+В данном курсовом проекте было создано Flask приложение с построением MVC архитектуры, 
+использованием flask-restx и базы данных SQLite, контролем доступа пользователей, хешированием паролей, использованием 
+JSON Web Token (JWT), написание unit-тестов при помощибиблиотек pytest, unittest.
 
-- Загрузка данных в базу
-```shell
-python load_fixture
-```
-Скрпит читает файл fixtures.json и загружает данные в базу. Если данные уже загружены - выводит соответсвующее сообщение. 
 
-## Запуск проекта
+**Отработаны навыки** работы с SQLAlchemy, работы с Class-Based-View(CBV) фреймворка flask-restx, написание и
+использование сериализаторов фреймворка marshmallow, построения MVC архитектуры Flask приложения, работы с JWT, 
+хешированием паролей. Также были написаны тесты для некоторых процессов работы прилоения.
 
-### Bash (Linux/MACOS)
-```shell
-export FLASK_APP=run.py
-export FLASK_ENV='development'
-flask run
-```
-
-### CMD (Windows)
-```shell
-set FLASK_APP=run.py
-set FLASK_ENV=development
-flask run
-```
-
-### PowerShell (Windows)
-```shell
-$env:FLASK_APP = "run"
-$env:FLASK_ENV = "development"
-flask run
-```
-
-## Запуск тестов
-```shell
-pytest .
-```
+Для работы необходимо клонировать репозиторий и установить flask, flask-sqlalchemy, sqlalchemy, marshmallow,
+flask_restx и кучу всякого. Для этого используйте файл requirements.txt (pip/pip3 install -r requirements.txt)
+#### Приятного использования! 
 
