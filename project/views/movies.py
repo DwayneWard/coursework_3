@@ -44,7 +44,7 @@ class MoviesView(Resource):
         return movie_service.get_all(), 200
 
 
-@movies_ns.route('/<int:mid>/')
+@movies_ns.route('/<int:mid>')
 class MovieView(Resource):
     """
     Class-Based View для отображения конкретного фильма из БД.

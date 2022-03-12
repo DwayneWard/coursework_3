@@ -32,10 +32,10 @@ class TestDirectorView:
         return d
 
     def test_get_genre(self, client, director):
-        response = client.get(self.url.format(genre_id=director.id))
+        response = client.get(self.url.format(director_id=director.id))
         assert response.status_code == 200
         assert response.json == {"id": director.id, "name": director.name}
 
     def test_genre_not_found(self, client):
-        response = client.get(self.url.format(genre_id=1))
+        response = client.get(self.url.format(director_id=1))
         assert response.status_code == 404

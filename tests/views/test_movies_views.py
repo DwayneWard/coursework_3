@@ -12,9 +12,9 @@ class TestMoviesView:
                   description='test1',
                   trailer='test1',
                   year=2000,
-                  rating=3.8,
-                  genre_id=5,
-                  director_id=4)
+                  rating='3.8',
+                  genre_id='5',
+                  director_id='4')
         db.session.add(m)
         db.session.commit()
         return m
@@ -29,8 +29,8 @@ class TestMoviesView:
              "trailer": movie.trailer,
              "year": movie.year,
              "rating": movie.rating,
-             "genre_id": movie.genre_id,
-             "director_id": movie.director_id,
+             "genre_id": str(movie.genre_id),
+             "director_id": str(movie.director_id),
              },
         ]
 

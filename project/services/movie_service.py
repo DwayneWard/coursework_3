@@ -61,5 +61,11 @@ class MovieService:
         return MovieSchema(many=True).dump(newest_movies_by_page)
 
     def get_newest(self) -> list:
+        """
+        Метод реализует получение записей из базы данных, отсортированным по году выпуска.
+        Ограничение на количество записей устанавливается в конфигурации приложения.
+
+        :return: Cериализованные данные о всех фильмах, в отсортированном по году выпуска виде.
+        """
         newest_movies = self.dao.get_newest()
         return MovieSchema(many=True).dump(newest_movies)

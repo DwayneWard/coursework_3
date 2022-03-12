@@ -53,6 +53,6 @@ class GenreView(Resource):
         В случае, если id нет в базе данных - exception и HTTP-код 404.
         """
         try:
-            return jsonify(genre_service.get_one(gid))
+            return genre_service.get_one(gid), 200
         except ItemNotFound:
             abort(404, "Genre not found")

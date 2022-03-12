@@ -49,5 +49,6 @@ class FavoriteMovieDAO:
         """
         Метод реализует получение id записи в таблице
         """
-        data = self.session.query(UserMovie).filter(and_(UserMovie.user_id == user_id, UserMovie.movie_id == movie_id)).first()
+        data = self.session.query(UserMovie).filter(
+            and_(UserMovie.user_id == user_id, UserMovie.movie_id == movie_id)).first()
         return data.id

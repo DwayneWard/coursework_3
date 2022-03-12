@@ -48,6 +48,6 @@ class TestMovieDAO:
         page = 2
         assert len(self.dao.get_by_page(page)) == 0
 
-    def test_newest_movie(self, movie_1, movie_2):
+    def test_newest_movie_by_page(self, movie_1, movie_2):
         page = 1
-        assert self.dao.get_newest(page) == [movie_2, movie_1]
+        assert self.dao.get_newest_by_page(page) == [movie_2, movie_1]

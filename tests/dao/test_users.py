@@ -44,7 +44,7 @@ class TestUserDAO:
         email = "test2"
         assert self.dao.get_by_email(email) == user_2
 
-    def test_user_create(self):  # TODO Что писать?? Не понимаю
+    def test_user_create(self):  # TODO Сделать создание пользователя, потом вызвать гет ал, и посчитать длину списка == 3
         pass
 
     def test_user_delete(self, user_1):
