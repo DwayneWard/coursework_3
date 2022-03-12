@@ -1,41 +1,40 @@
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-from project.dao.models import Genre
-from project.exceptions import ItemNotFound
-from project.schemas.genre import GenreSchema
-from project.services import GenresService
+from project.dao.genre import GenreDAO
+from project.dao.models.genre import Genre
+from project.services.genres_service import GenreService
+from project.setup_db import db
 
 
-class TestGenresService:
+@pytest.fixture()
+def genre_dao():
+    genre_dao = GenreDAO(db.session)
+    g1 = Genre(id=1, name='Боевик')
+    g2 = Genre(id=2, name='Триллер')
+    g3 = Genre(id=3, name='Ужастик')
+
+    genre_dao.get_one = MagicMock(return_value=g1)
+    genre_dao.get_all = MagicMock(return_value=[g1, g2, g3])
+    genre_dao.get_by_page = MagicMock()
+    return genre_dao
+
+
+class TestGenreService:
     @pytest.fixture(autouse=True)
-    def service(self, db):
-        self.service = GenresService(db.session)
+    def genre_service(self, genre_dao):
+        self.genre_service = GenreService(dao=genre_dao)
 
-    @pytest.fixture
-    def genre(self):
-        return Genre(id=1, name="genre_1")
+    def test_get_one(self):
+        genre = self.genre_service.get_one(1)
+        assert genre is not None
+        assert genre['id'] is not None
 
-    @pytest.fixture
-    def genre_dao_mock(self, genre):
-        with patch("project.services.genres_service.GenreDAO") as mock:
-            mock.return_value = Mock(
-                get_by_id=Mock(return_value=GenreSchema().dump(genre)),
-                get_all=Mock(return_value=GenreSchema(many=True).dump([genre])),
-            )
-            yield mock
+    def test_get_all(self):
+        genres = self.genre_service.get_all()
+        assert len(genres) == 3
 
-    def test_get_all_genres(self, genre_dao_mock, genre):
-        assert self.service.get_all_genres() == GenreSchema(many=True).dump([genre])
-        genre_dao_mock().get_all.assert_called_once()
-
-    def test_get_item_by_id(self, genre_dao_mock, genre):
-        assert self.service.get_item_by_id(genre.id) == GenreSchema().dump(genre)
-        genre_dao_mock().get_by_id.assert_called_once_with(genre.id)
-
-    def test_get_item_by_id_not_found(self, genre_dao_mock):
-        genre_dao_mock().get_by_id.return_value = None
-
-        with pytest.raises(ItemNotFound):
-            self.service.get_item_by_id(1)
+    def test_get_by_page(self):
+        genres = self.genre_service.get_by_page(2)
+        assert len(genres) == 0

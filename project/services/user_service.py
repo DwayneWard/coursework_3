@@ -1,9 +1,6 @@
-import base64
-import hashlib
-import hmac
-
-# from constants import PWD_HASH_SALT, PWD_HASH_ITERATIONS
-from dao.user import UserDAO
+from project.dao.user import UserDAO
+from project.exceptions import PasswordError, UserAlreadyHave
+from project.tools.hash_tools import make_user_password_hash, compare_password
 
 
 class UserService:
@@ -40,14 +37,14 @@ class UserService:
             return None
         return user
 
-    def get_by_username(self, username: str):
+    def get_by_email(self, email: str):
         """
-        Метод реализует получение записи об одном пользователе из базы данных по username.
+        Метод реализует получение записи об одном пользователе из базы данных по email.
 
-        :param username: Имя пользователя.
-        :return: Ответ базы данных на запрос о получении записи о пользователе по username
+        :param email: Имя пользователя.
+        :return: Ответ базы данных на запрос о получении записи о пользователе по email
         """
-        return self.dao.get_by_username(username)
+        return self.dao.get_by_email(email)
 
     def create(self, data: dict) -> list:
         """
@@ -55,60 +52,47 @@ class UserService:
 
         :param data: Данные, которые необходимо записать в базу данных.
         """
+        password = data['password']
+        hash_password = make_user_password_hash(password)
+        data['password'] = hash_password
+
+        user = self.get_by_email(data['email'])
+
+        if user:
+            raise UserAlreadyHave
+
         return self.dao.create(data)
 
-    def delete(self, uid: int) -> None:
+    def partial_update(self, email: str, data: dict) -> None:
         """
-        Метод реализует удаление записи о пользователе в базе данных.
+        Метод производит частичное обновление полей таблицы пользователей в базе данных
 
-        :param uid: id пользователя в базе данных.
+        :param email: Параметр для поиска необходимого для обновления пользователя
+        :param data: Данные для обновления пользователя (имя, фамилия, любимые жанры)
         """
-        user = self.get_one(uid)
-        self.dao.delete(user)
+        user = self.get_by_email(email)
 
-    def update(self, data: dict) -> None:
-        """
-        Метод реализует обновление записи о пользователе в базе данных.
-
-        :param data:
-        :return:
-        """
-        user = self.get_one(data.get("id"))
-        user.username = data.get("username")
-        user.password = data.get("password")
-        user.role = data.get("role")
+        if "name" in data:
+            user.name = data.get("name")
+        if "surname" in data:
+            user.surname = data.get("surname")
+        if "favorite_genre" in data:
+            user.favorite_genre = data.get("favorite_genre")
 
         self.dao.update(user)
 
-    def make_user_password_hash(self, password: str):
+    def update_password(self, email: str, old_password: str, new_password: str) -> None:
         """
-        Метод производит генерацию хеша из передаваемого пароля. Кодируется методом SHA256,
-        с использованием SALT и количеством иттераций 100000.
+        Метод производит обновление пароля. Для обновления необходим старый пароль.
 
-        :param password: Пароль в виде строки.
-        :return: Сгенерированный хэш-пароль
+        :param email: Email для поиска пользователя в базе данных
+        :param old_password: Старый пароль пользователя
+        :param new_password: Новый пароль
         """
-        return base64.b64encode(hashlib.pbkdf2_hmac(
-            'sha256',
-            password.encode('utf-8'),
-            PWD_HASH_SALT,
-            PWD_HASH_ITERATIONS
-        ))
+        user = self.get_by_email(email)
 
-    def compare_password(self, password_hash, other_password: str) -> bool:
-        """
-        Функция производит сравнивание двух паролей, переводит пароль, введенный пользователем в хэш
-        и сравнивает с имеющимся.
+        if not compare_password(password_hash=user.password, other_password=old_password):
+            raise PasswordError
+        user.password = make_user_password_hash(new_password)
 
-        :param password_hash: Хеш-пароль.
-        :param other_password: Пароль в открытом виде.
-        :return: True или False
-        """
-        return hmac.compare_digest(
-            base64.b64decode(password_hash),
-            hashlib.pbkdf2_hmac(
-                'sha256',
-                other_password.encode('utf-8'),
-                PWD_HASH_SALT,
-                PWD_HASH_ITERATIONS
-            ))
+        self.dao.update(user)

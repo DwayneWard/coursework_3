@@ -1,82 +1,72 @@
-from flask import request
+from flask import request, abort
 from flask_restx import Namespace, Resource
 
-from implemented import user_service
-from dao.model.user import UserSchema
+from project.exceptions import PasswordError
+from project.implemented import user_service
+from project.schemas.user import UserSchema
+from project.tools.decode_token import get_email_from_token
+from project.tools.decorators import auth_required
 
-user_ns = Namespace('users')
-
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
-
-
-@user_ns.route('/')
-class UsersView(Resource):
-    """
-    Class-Based View для отображения режиссеров из БД.
-    Реализовано:
-    - отображение всех пользователей GET-запросом на /users.
-    """
-
-    def get(self):
-        """
-        Метод реализует отправку GET-запроса на /users.
-        :return: Сериализованные данные в формате JSON и HTTP-код 200.
-        """
-        all_users = user_service.get_all()
-        return users_schema.dump(all_users), 200
-
-    def post(self) -> tuple:
-        """
-        Метод реализует отправку POST-запроса на /users.
-        Записывает данные о новом пользователе с использованием переданных в формате JSON в теле POST-запроса.
-        :return: Возвращает пустую строку и HTTP-код 201
-        """
-        json_data = request.json
-        user_service.create(json_data)
-
-        return '', 201
+users_ns = Namespace('user')
 
 
-@user_ns.route('/<uid>')
+@users_ns.route('/')
 class UserView(Resource):
     """
-    Class-Based View для отображения конкретного пользователя из БД.
-    Реализовано:
-    - отображение данных о конкретном пользователе GET-запросом на /users/id;
+    Class-Based View для отображения профиля авторизованного пользователя.
     """
-    def get(self, uid):
+
+    @auth_required
+    @users_ns.response(200, "OK")
+    def get(self):
         """
-        Метод реализует отправку GET-запроса на /users/id.
-        :param uid: id пользователя, информацию о котором нужно вытащить из БД.
+        Метод производит получение данных о профиле авторизованного пользователя. В выдаче отсутсвует хэш-пароль,
+        хранящийся в базе данных. Реализуется путем отправки GET-запроса на /user.
+
         :return: Сериализованные данные в формате JSON и HTTP-код 200.
-        В случае, если id нет в базе данных - пустая строка и HTTP-код 404.
         """
-        user_by_id = user_service.get_one(uid)
-        if user_by_id is None:
-            return '', 404
-        return user_schema.dump(user_by_id), 200
+        email = get_email_from_token()
+        user = user_service.get_by_email(email)
+        return UserSchema().dump(user), 200
 
-    def put(self, uid: int) -> tuple:
+    @auth_required
+    @users_ns.response(204, "OK")
+    def patch(self):
         """
-        Метод реализует PUT-запрос на /users/id.
-        В теле запроса необходимо передать данные со всеми полями таблицы users, для обновления данных.
-        :param uid: id пользователя, информацию о котором нужно заменить из БД.
-        :return: Записывает в БД обновленные данные о конкретном пользователе.
-        Возвращает пустую строку и HTTP-код 204.
-        В случае, если id нет в базе данных - пустая строка и HTTP-код 404.
+        Метод производит частичное обновление данных в профиле авторизованного пользователя (имя, фамилия, любимый жанр)
+        путем отправления PATCH-запроса на /user.
         """
-        json_data = request.json
-        user_service.update(uid, json_data)
+        email = get_email_from_token()
+        data = request.json
 
-        return '', 204
+        user_service.partial_update(email, data)
+        return "Update success", 204
 
-    def delete(self, uid: int) -> tuple:
+
+@users_ns.route("/password")
+class PasswordUpdateView(Resource):
+    """
+    Class-Based View для обновления авторизованным пользователем пароля.
+    """
+
+    @auth_required
+    @users_ns.response(200, "OK")
+    @users_ns.response(401, "Password is incorrect")
+    def put(self):
         """
-        Метод реализует отправку DELETE-запроса на /users/id.
-        :param uid: id пользователя, информацию о котором нужно удалить из БД.
-        :return: Возвращает пустую строку и HTTP-код 204.
-        В случае, если id нет в базе данных - пустая строка и HTTP-код 404.
+        Метод реализует изменение пароля авторизованного пользователя. Для обновления необходимо отправить
+        новый пароль и старый пароль путем отправления PUT-запроса на /user/password.
         """
-        user_service.delete(uid)
-        return '', 204
+        # password_1 - старый пароль
+        # password_2 - новый пароль
+        email = get_email_from_token()
+        req_json = request.json
+
+        old_password = req_json.get('password_1')
+        new_password = req_json.get('password_2')
+
+        try:
+            user_service.update_password(email, old_password, new_password)
+            return "OK", 200
+        except PasswordError:
+            abort(401, "Password is incorrect")

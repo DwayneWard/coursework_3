@@ -9,7 +9,7 @@ class User(BaseMixin, db.Model):
     password = db.Column(db.String, nullable=False)
     name = db.Column(db.String)
     surname = db.Column(db.String)
-    favorite_genre = db.Column(db.String)
+    favorite_genre = db.Column(db.String, db.ForeignKey("genres.name"))
 
     def __repr__(self):
         return f"<User '{self.email.title()}'>"

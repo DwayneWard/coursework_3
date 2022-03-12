@@ -1,29 +1,7 @@
-from project.dao import GenreDAO
+from project.dao.genre import GenreDAO
 from project.exceptions import ItemNotFound
 from project.schemas.genre import GenreSchema
-from project.services.base import BaseService
 
-#
-# class GenresService(BaseService):
-#     def create(self, data: dict) -> None:
-#         """
-#         Метод реализует запись новых данных в базу данных.
-#
-#         :param data: Данные, которые необходимо записать в базу данных.
-#         :return: None
-#         """
-#         return self.dao.create(data)
-#
-#     def get_item_by_id(self, pk):
-#         genre = GenreDAO(self._db_session).get_by_id(pk)
-#         if not genre:
-#             raise ItemNotFound
-#         return GenreSchema().dump(genre)
-#
-#     def get_all_genres(self):
-#         genres = GenreDAO(self._db_session).get_all()
-#         return GenreSchema(many=True).dump(genres)
-#
 
 class GenreService:
     """
@@ -36,53 +14,35 @@ class GenreService:
         """
         self.dao = dao
 
-    def get_one(self, gid: int) -> None or list:
+    def get_one(self, gid: int) -> ItemNotFound or list:
         """
-        Метод реализует получение записи об одном фильме из базы данных по id.
-        :param gid: id фильма в базе данных.
-        :return: Ответ базы данных на запрос о получении записи о фильме по id.
-        При отсутствии id в базе данных возвращает None.
+        Метод реализует получение записи об одном жанре из базы данных по id.
+
+        :param gid: id жанра в базе данных.
+        :return: Сериализованные данные о жанре по id.
+        При отсутствии id в базе данных возвращает exception.
         """
         genre = self.dao.get_one(gid)
         if not genre:
-            return None
-        return genre
+            raise ItemNotFound
+        return GenreSchema().dump(genre)
 
     def get_all(self) -> list:
         """
         Метод реализует получение записей о всех фильмах из базы данных.
-        :return: Ответ базы данных на запрос получения данных о всех фильмах.
-        """
-        return self.dao.get_all()
 
-    # def create(self, data: dict) -> None:
-    #     """
-    #     Метод реализует запись новых данных в базу данных.
-    #     :param data: Данные, которые необходимо записать в базу данных.
-    #     :return: None
-    #     """
-    #     return self.dao.create(data)
-    #
-    # def update(self, gid: int, data: dict) -> None:
-    #     """
-    #     Метод реализует обновление записи о фильме в базах данных.
-    #     :param gid: id фильма в базе данных.
-    #     :param data: Данные о фильме, которые нужно записать в базу данных.
-    #     :return:
-    #     """
-    #     genre = self.get_one(gid)
-    #
-    #     genre.id = data.get('id')
-    #     genre.name = data.get('name')
-    #
-    #     self.dao.update(genre)
-    #
-    # def delete(self, gid: int) -> None:
-    #     """
-    #     Метод реализует удаление записи о фильме в базе данных по id.
-    #     :param gid: id фильма в базе данных.
-    #     :return: None
-    #     """
-    #     genre = self.get_one(gid)
-    #
-    #     self.dao.delete(genre)
+        :return: Сериализованные данные о всех жанрах
+        """
+        genres = self.dao.get_all()
+        return GenreSchema(many=True).dump(genres)
+
+    def get_by_page(self, page: int) -> list:
+        """
+        Метод реализует получение записей из базы данных постранично.
+        Ограничение на количество записей устанавливается в конфигурации приложения.
+
+        :param page: Номер страницы.
+        :return: Cериализованные данные о всех фильмах постранично.
+        """
+        genres_by_page = self.dao.get_by_page(page)
+        return GenreSchema(many=True).dump(genres_by_page)
