@@ -13,5 +13,34 @@ JSON Web Token (JWT), написание unit-тестов при помощиб
 
 Для работы необходимо клонировать репозиторий и установить flask, flask-sqlalchemy, sqlalchemy, marshmallow,
 flask_restx и кучу всякого. Для этого используйте файл requirements.txt (pip/pip3 install -r requirements.txt)
-#### Приятного использования! 
+
+### Запуск проекта
+
+#### Bash (Linux/MACOS)
+```shell
+export FLASK_APP=run.py
+export FLASK_ENV='development'
+flask run
+```
+
+#### CMD (Windows)
+```shell
+set FLASK_APP=run.py
+set FLASK_ENV=development
+flask run
+```
+
+#### PowerShell (Windows)
+```shell
+$env:FLASK_APP = "run"
+$env:FLASK_ENV = "development"
+flask run
+```
+
+### Запуск тестов
+```shell
+pytest .
+```
+
+## Приятного использования! 
 
