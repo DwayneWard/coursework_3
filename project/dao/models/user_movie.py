@@ -7,3 +7,5 @@ class UserMovie(BaseMixin, db.Model):
 
     user_id = db.Column(db.String, db.ForeignKey("users.id"))
     movie_id = db.Column(db.String, db.ForeignKey("movies.id"))
+    user = db.relationship("User")
+    movie = db.relationship("Movie")

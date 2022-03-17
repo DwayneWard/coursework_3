@@ -17,7 +17,6 @@ class DirectorsView(Resource):
     (GET-запросом на /directors с использованием квери-параметра page);
     """
 
-    # @auth_required
     @directors_ns.response(200, "OK")
     def get(self) -> tuple:
         """
@@ -41,7 +40,6 @@ class DirectorView(Resource):
     - отображение данных о конкретном режиссере GET-запросом на /directors/id;
     """
 
-    # @auth_required
     @directors_ns.response(200, "OK")
     @directors_ns.response(404, "Director not found")
     def get(self, did):

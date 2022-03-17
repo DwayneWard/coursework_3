@@ -7,7 +7,7 @@ from project.implemented import auth_service
 auth_ns = Namespace('auth')
 
 
-@auth_ns.route('/register/')
+@auth_ns.route('/register')
 class AuthsRegisterView(Resource):
     """
     Класс CBV для представления /auth/register.
@@ -27,7 +27,7 @@ class AuthsRegisterView(Resource):
         return "User created", 201
 
 
-@auth_ns.route('/login/')
+@auth_ns.route('/login')
 class AuthLoginView(Resource):
     """
     CBV для представления /auth/login
@@ -37,7 +37,7 @@ class AuthLoginView(Resource):
     @auth_ns.response(401, "No data")
     def post(self):
         """
-        Метод реализует генерацию пары access и refresh токенов для дальнейшей авторизации пользователя
+        Метод реализует генерацию пары access и refresh токенов для дальнейшей авторизации пользователя.
         """
         req_json = request.json
         email = req_json.get('email')
@@ -56,7 +56,7 @@ class AuthLoginView(Resource):
     def put(self):
         """
         Метод реализует выдачу новой пары access и refresh токенов на основании имеющегося
-        у пользователя refresh токена
+        у пользователя refresh токена.
         """
         req_json = request.json
         refresh_token = req_json.get("refresh_token")

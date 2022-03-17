@@ -1,6 +1,8 @@
 from sqlalchemy import and_
 
+from project.dao.models.movie import Movie
 from project.dao.models.user_movie import UserMovie
+from project.schemas.favorites_movies import FavMovieSchema
 
 
 class FavoriteMovieDAO:
@@ -52,3 +54,13 @@ class FavoriteMovieDAO:
         data = self.session.query(UserMovie).filter(
             and_(UserMovie.user_id == user_id, UserMovie.movie_id == movie_id)).first()
         return data.id
+
+    def get_movies_for_user(self, user_id) -> list:
+        """
+        Метод реализует получение всех фильмов, понравившихся пользователю.
+
+        :param user_id: id авторизованного пользователя
+        """
+        movies = self.session.query(UserMovie.movie_id, Movie.title.label('movie')).join(Movie).filter(
+            UserMovie.user_id == user_id)
+        return FavMovieSchema(many=True).dump(movies)

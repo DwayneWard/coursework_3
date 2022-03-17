@@ -31,7 +31,7 @@ class FavoriteMovieService:
         Метод реализует поиск фильма в таблице с избранными
 
         :param movie_id: id фильма
-        :return: True или эксепшн
+        :return: True или ошибка
         """
         if not self.dao.is_movie_id_in(movie_id):
             raise ItemNotFound
@@ -40,13 +40,33 @@ class FavoriteMovieService:
     def delete(self, id_: int) -> None:
         """
         Метод реализует удаление записи в базе данных.
+
         :param id_: id записи в базе данных.
         """
         data = self.get_one(id_)
         self.dao.delete(data)
 
     def get_id(self, movie_id: int, user_id: int):
+        """
+        Метод реализует получение id записи в таблицы базы данных.
+
+        :param movie_id: id фильма
+        :param user_id: id авторизованного пользователя
+        """
+
         data_id = self.dao.get_id(movie_id, user_id)
         if not data_id:
             raise ItemNotFound
         return data_id
+
+    def get_movies_for_user(self, user_id: int) -> list:
+        """
+        Метод реализует получение всех фильмов, понравившихся пользователю.
+
+        :param user_id: id авторизованного пользователя
+        """
+
+        movies = self.dao.get_movies_for_user(user_id)
+        if not movies:
+            raise ItemNotFound
+        return movies

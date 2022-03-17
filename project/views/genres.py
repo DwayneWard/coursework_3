@@ -34,7 +34,7 @@ class GenresView(Resource):
         return genre_service.get_all(), 200
 
 
-@genres_ns.route("/<int:gid>/")
+@genres_ns.route("/<int:gid>")
 class GenreView(Resource):
     """
         Class-Based View для отображения конкретного жанра из БД.
