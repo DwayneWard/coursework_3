@@ -1,19 +1,16 @@
 from flask import abort
 from flask_restx import Namespace, Resource
 
-from project.dao.models.movie import Movie
-from project.dao.models.user_movie import UserMovie
 from project.exceptions import ItemNotFound
 from project.implemented import favorite_movie_service, movie_service
-from project.schemas.favorites_movies import FavMovieSchema
-from project.setup_db import db
 from project.tools.decode_token import get_id_from_token
 from project.tools.decorators import auth_required
 
-favorites_ns = Namespace('favorites/movies')
+favorites_ns = Namespace('favorites')
 
 
-@favorites_ns.route('/')
+@favorites_ns.doc(securiry='Bearer')
+@favorites_ns.route('/movies/')
 class FavMovieView(Resource):
 
     @auth_required
@@ -28,7 +25,7 @@ class FavMovieView(Resource):
             abort(404, "User don't stared any movies")
 
 
-@favorites_ns.route('/<int:movie_id>')
+@favorites_ns.route('/movies/<int:movie_id>')
 class FavoriteMovieView(Resource):
     """
     Class-Based View для добавления или удаления определенного фильма в избранное, авторизованному пользователю.

@@ -1,5 +1,6 @@
 from project.dao.favorite_movie import FavoriteMovieDAO
 from project.exceptions import ItemNotFound
+from project.schemas.movie import MovieSchema
 
 
 class FavoriteMovieService:
@@ -69,4 +70,4 @@ class FavoriteMovieService:
         movies = self.dao.get_movies_for_user(user_id)
         if not movies:
             raise ItemNotFound
-        return movies
+        return MovieSchema(many=True).dump(movies)

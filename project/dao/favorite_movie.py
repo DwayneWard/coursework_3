@@ -61,6 +61,5 @@ class FavoriteMovieDAO:
 
         :param user_id: id авторизованного пользователя
         """
-        movies = self.session.query(UserMovie.movie_id, Movie.title.label('movie')).join(Movie).filter(
-            UserMovie.user_id == user_id)
-        return FavMovieSchema(many=True).dump(movies)
+        return self.session.query(Movie).select_from(UserMovie).filter(UserMovie.user_id == user_id,
+                                                                       UserMovie.movie_id == Movie.id).all()
