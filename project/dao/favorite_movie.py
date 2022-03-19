@@ -2,7 +2,6 @@ from sqlalchemy import and_
 
 from project.dao.models.movie import Movie
 from project.dao.models.user_movie import UserMovie
-from project.schemas.favorites_movies import FavMovieSchema
 
 
 class FavoriteMovieDAO:
