@@ -5,7 +5,7 @@ services:
     image: dwayneward/hw_26:version-2
     ports:
       - 80:80
-    volumes:
-      - ./project.db:/code/project.db
+#    volumes:
+#      - ./project.db:/code/project.db
     env_file:
       - ./envs.env
