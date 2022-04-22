@@ -6,7 +6,5 @@ services:
       context: .
     ports:
       - 8080:80
-    volumes:
-      - ./project.db:/code/project.db
     env_file:
       - ./envs.env
