@@ -7,6 +7,6 @@ services:
     ports:
       - 8080:80
     volumes:
-      - project.db:/code/project.db
+      - ./project.db:/code/project.db
     env_file:
       - ./envs.env
