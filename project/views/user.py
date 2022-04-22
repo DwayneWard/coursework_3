@@ -16,8 +16,8 @@ class UserView(Resource):
     Class-Based View для отображения профиля авторизованного пользователя.
     """
 
-    @auth_required
     @users_ns.response(200, "OK")
+    @auth_required
     def get(self):
         """
         Метод производит получение данных о профиле авторизованного пользователя. В выдаче отсутсвует хэш-пароль,
@@ -29,8 +29,8 @@ class UserView(Resource):
         user = user_service.get_by_email(email)
         return UserSchema().dump(user), 200
 
-    @auth_required
     @users_ns.response(204, "OK")
+    @auth_required
     def patch(self):
         """
         Метод производит частичное обновление данных в профиле авторизованного пользователя (имя, фамилия, любимый жанр)
@@ -49,9 +49,9 @@ class PasswordUpdateView(Resource):
     Class-Based View для обновления авторизованным пользователем пароля.
     """
 
-    @auth_required
     @users_ns.response(200, "OK")
     @users_ns.response(401, "Password is incorrect")
+    @auth_required
     def put(self):
         """
         Метод реализует изменение пароля авторизованного пользователя. Для обновления необходимо отправить

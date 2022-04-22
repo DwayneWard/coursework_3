@@ -6,6 +6,5 @@ RUN pip install -r requirements.txt
 COPY ./project ./project
 COPY ./tests ./tests
 COPY run.py .
-COPY project.db .
 
 CMD flask run -h 0.0.0.0 -p 80

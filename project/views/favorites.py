@@ -13,10 +13,14 @@ favorites_ns = Namespace('favorites')
 @favorites_ns.route('/movies/')
 class FavMovieView(Resource):
 
-    @auth_required
     @favorites_ns.response(200, 'OK')
     @favorites_ns.response(404, "User don't stared any movies")
+    @auth_required
     def get(self):
+        """
+        Метод реализует получение избранных фильмов данного пользователя
+        """
+
         user_id = get_id_from_token()
 
         try:
@@ -31,9 +35,9 @@ class FavoriteMovieView(Resource):
     Class-Based View для добавления или удаления определенного фильма в избранное, авторизованному пользователю.
     """
 
-    @auth_required
     @favorites_ns.response(201, "Created")
     @favorites_ns.response(404, "Movie not found")
+    @auth_required
     def post(self, movie_id: int):
         """
         Метод реализует добавление фильма в избранное авторизованному пользователю.
@@ -47,9 +51,9 @@ class FavoriteMovieView(Resource):
         favorite_movie_service.create(movie_id=movie_id, user_id=user_id)
         return 'Created', 201
 
-    @auth_required
     @favorites_ns.response(204, "Deleted")
     @favorites_ns.response(404, "Movie is not stared")
+    @auth_required
     def delete(self, movie_id: int):
         """
         Метод реализует удаление фильма из избранного авторизованного пользователя.
